@@ -1,0 +1,19 @@
+{
+    "oda.com":{
+       "item_url_path": "//a[@class='k-text-style k-text-style--body-m k-text--weight-bold k-text--none k-link AppLink_LinkContainer__JZumo components_ModalTileLink__xMAm0 k-link--text AppLink_AppLink__uXETs']/@href",
+       "name_path":"//*[@id='main-content']/div[1]/div/div[2]/div[2]/h1/text()",
+       "brand_path":"//*[@class='k-text-style k-text-style--body-xl k-text-color--subdued']/text()",
+       "weight_path":"//*[@id='radix-:R5bbpbl6:']/div[2]/div[2]/p/text()",
+       "ingredients_path":"//*[@id='radix-:R5bbpbl6:']/div[3]/div[2]/p/text()",
+       "energi_path":"//*[@id='radix-:R5rbpbl6:']/div[2]/div[2]/p/text()",
+       "fett_path":"//*[@id='radix-:R5rbpbl6:']/div[3]/div[2]/p/text()",
+       "karbohydrater_path":"//*[@id='radix-:R5rbpbl6:']/div[5]/div[2]/p/text()",
+       "kostfiber_path":"//*[@id='radix-:R5rbpbl6:']/div[7]/div[2]/p/text()",
+       "protein_path":"//*[@id='radix-:R5rbpbl6:']/div[8]/div[2]/p/text()"
+    },
+    "meny.no":{
+       "name_path":"navn",
+       "brand_path":"merke",
+       "info_path":"info"
+    }
+ }
