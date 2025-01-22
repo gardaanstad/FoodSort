@@ -169,9 +169,30 @@ def display_menu():
     print("4. Clear cache")
     print("0. Exit")
 
+# ===================================================================================
+
 async def main():
     stats = Stats()
     clear_screen()
+    
+    # Cross-platform key detection setup
+    if os.name == 'nt':
+        import msvcrt
+        def get_key():
+            return msvcrt.getch().decode('utf-8')
+    else:
+        import tty
+        import termios
+        fd = sys.stdin.fileno()
+        original_settings = termios.tcgetattr(fd)
+
+        def get_key():
+            try:
+                tty.setraw(sys.stdin.fileno())
+                char = sys.stdin.read(1)
+            finally:
+                termios.tcsetattr(fd, termios.TCSADRAIN, original_settings)
+            return char
     
     # Load configuration
     with open("options.json") as f:
@@ -204,43 +225,31 @@ async def main():
     stats.total_categories = len(stats.cache_misses)
     stats.processed_categories = 0
     
-    # Process uncached categories
     if stats.cache_misses:
-        print("\nStarting scraping process...")
-        start_time = time.time()
-        for category_url in stats.cache_misses:
-            category_items = await process_category(category_url, options, stats)
-            items.update(category_items)
+        print("\n\nDo you want to scrape uncached URLs?\n1. Yes\n2. No\n\nSelect an option\n> ", end="", flush=True)
+        choice = get_key()
+        
+        # Process uncached categories
+        if choice == "1":
+            clear_screen()
+            print("\nStarting scraping process...\n")
             
-            # Update cache
-            cache_data[category_url] = {
-                "timestamp": datetime.datetime.now().isoformat(),
-                "items": category_items
-            }
-            save_cache(cache_data)
-        stats.scrape_time = time.time() - start_time
-        print("\n\nScraping complete!")
+            start_time = time.time()
+            
+            for category_url in stats.cache_misses:
+                category_items = await process_category(category_url, options, stats)
+                items.update(category_items)
+                
+                # Update cache
+                cache_data[category_url] = {
+                    "timestamp": datetime.datetime.now().isoformat(),
+                    "items": category_items
+                }
+                save_cache(cache_data)
+            stats.scrape_time = time.time() - start_time
+            print("\n\nScraping complete!")
     
     stats.total_items = len(items)
-    
-    # Cross-platform key detection setup
-    if os.name == 'nt':
-        import msvcrt
-        def get_key():
-            return msvcrt.getch().decode('utf-8')
-    else:
-        import tty
-        import termios
-        fd = sys.stdin.fileno()
-        original_settings = termios.tcgetattr(fd)
-
-        def get_key():
-            try:
-                tty.setraw(sys.stdin.fileno())
-                char = sys.stdin.read(1)
-            finally:
-                termios.tcsetattr(fd, termios.TCSADRAIN, original_settings)
-            return char
 
     # User interaction loop
     try:
@@ -301,15 +310,15 @@ async def main():
             
             elif choice == "4":
                 clear_screen()
+                display_menu()
                 
                 if os.path.exists("cache.json"):
                     os.remove("cache.json")
-                    print("Cache cleared")
+                    print("\nCache has been cleared! ", end="")
                 else:
-                    print("No cache found")
+                    print("\nNo cache found ", end="")
                 
-                print("\nPress any key to return\n> ", end="", flush=True)
-                get_key()
+                time.sleep(2)
 
             elif choice == "0":
                 print("\n\nGoodbye!")
